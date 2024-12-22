@@ -92,7 +92,7 @@ export default function ViewPage({
   ];
   return (
     <div className="flex h-screen flex-col items-center text-black">
-      <div className="flex">
+      <div className="flex mt-2">
         <p>Find by name: </p>
         <input
           value={searchName}
@@ -106,7 +106,7 @@ export default function ViewPage({
           }}
         />
       </div>
-      <div className="flex">
+      <div className="flex mt-2">
         <p>Find by class name:</p>
         <input
           value={searchClass}
@@ -120,13 +120,13 @@ export default function ViewPage({
           }}
         />
       </div>
-      <Table className="w-[90%]" dataSource={studentList} columns={columns} />
+      <Table className="w-[90%] mt-2" dataSource={studentList} columns={columns} />
       <Button
         onClick={() => {
           router.push({ pathname: "/student/create", query: { role } });
         }}
         text="Create student"
-        styling="w-[12%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
+        styling="w-[15%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
       />
       {deleteModalShown && (
         <div

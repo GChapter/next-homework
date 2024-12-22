@@ -30,6 +30,8 @@ export default function ViewPage({
   const setClass = useClassStore((state) => state.setClass);
   const [deleteModalShown, setDeleteModalShown] = useState(false);
   const [classIndex, setClassIndex] = useState(0);
+  const [classList, setClassList] = useState<Class[] | undefined>(classes);
+  const [searchClass, setSearchClass] = useState("");
   const columns = [
     {
       title: "ID",
@@ -69,7 +71,10 @@ export default function ViewPage({
           />
           <Button
             onClick={() => {
-              router.push({ pathname: `/class/view/${record.id}`, query: { role } });
+              router.push({
+                pathname: `/class/view/${record.id}`,
+                query: { role },
+              });
             }}
             text="Detail"
             styling="rounded-full bg-green-600 px-5 py-2 font-bold text-white"
@@ -79,8 +84,24 @@ export default function ViewPage({
     },
   ];
   return (
-    <div className="flex h-screen flex-col items-center ">
-      <Table className="w-[90%]" dataSource={classes} columns={columns} />
+    <div className="flex h-screen flex-col items-center text-black">
+      <div className="mt-2 flex">
+        <p>Find by class name:</p>
+        <input
+          value={searchClass}
+          onChange={(event) => {
+            setSearchClass(event.target.value);
+            setClassList(
+              classes.filter((classObj) =>
+                classObj.className
+                  .toLowerCase()
+                  .includes(event.target.value.toLowerCase()),
+              ),
+            );
+          }}
+        />
+      </div>
+      <Table className="w-[90%] mt-2" dataSource={classList} columns={columns} />
       <Button
         onClick={() => {
           router.push({ pathname: "/class/create", query: { role } });
