@@ -44,6 +44,7 @@ export default function Page() {
     }
 
     alert("Student created successfully");
+    
     await router.push({ pathname: "/student/view", query: { role } });
   };
 

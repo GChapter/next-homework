@@ -14,7 +14,8 @@ interface Class {
 interface Student {
   id: number;
   studentName: string;
-  className: string;
+  classId: string;
+  class: object;
 }
 
 interface Props {
@@ -23,11 +24,11 @@ interface Props {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const classes = await fetch("http://localhost:8000/class", {
-    headers: {
-      Authorization: `Bearer ${"admin, principal, teacher"}`,
-    },
-  }).then((res) => res.json());
+  const classes = await fetch("http://localhost:8000/class").then((res) =>
+    res.json(),
+  );
+
+  console.log("Classes:", classes);
 
   const paths = classes.map((classObj: Class) => ({
     params: { id: String(classObj.id) },
@@ -47,19 +48,16 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
       notFound: true,
     };
   }
-  const classObj = await fetch(`http://localhost:8000/class/id/${id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${"admin, principal, teacher"}`,
-    },
-  }).then((res) => res.json());
+  const classObj = await fetch(`http://localhost:8000/class/id/${id}`).then(
+    (res) => res.json(),
+  );
 
   const students = await fetch(
     `http://localhost:8000/student/class/${classObj.className}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${"admin, principal, teacher"}`,
+        Authorization: `Bearer ${"Admin"}`,
       },
     },
   ).then((res) => res.json());
@@ -94,7 +92,7 @@ export default function Page({ classObj, students }: Props) {
     },
     {
       title: "Class",
-      dataIndex: "className",
+      dataIndex: ["class", "className"],
       key: "class",
     },
     {
@@ -115,14 +113,16 @@ export default function Page({ classObj, students }: Props) {
             text="Update"
             styling="rounded-full bg-blue-600 px-5 py-2 font-bold text-white"
           />
-          <Button
-            onClick={() => {
-              setStudentIndex(record.id);
-              setDeleteModalShown(true);
-            }}
-            text="Delete"
-            styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
-          />
+          {(role === "Admin" || role === "Teacher") && (
+            <Button
+              onClick={() => {
+                setStudentIndex(record.id);
+                setDeleteModalShown(true);
+              }}
+              text="Delete"
+              styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
+            />
+          )}
           <Button
             onClick={() => {
               router.push({ pathname: `/student/view/${record.id}` });
@@ -150,7 +150,7 @@ export default function Page({ classObj, students }: Props) {
           className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
         >
           <div className="rounded-lg bg-white p-6">
-            {role === "Admin" || role === "Teacher" ? (
+            {(role === "Admin" || role === "Teacher") && (
               <>
                 <p className="text-2xl font-bold text-red-500">
                   Are you sure to delete student with ID {studentIndex}?
@@ -186,10 +186,6 @@ export default function Page({ classObj, students }: Props) {
                   </div>
                 </div>
               </>
-            ) : (
-              <p className="text-2xl font-bold text-red-500">
-                You don&apos;t have permission to delete student
-              </p>
             )}
           </div>
         </div>

@@ -14,11 +14,9 @@ interface Props {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const students = await fetch("http://localhost:8000/student", {
-    headers: {
-      Authorization: `Bearer ${"admin"}`,
-    },
-  }).then((res) => res.json());
+  const students = await fetch("http://localhost:8000/student").then((res) =>
+    res.json(),
+  );
 
   const paths = students.map((student: Student) => ({
     params: { id: String(student.id) },
@@ -38,12 +36,9 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
       notFound: true,
     };
   }
-  const student = await fetch(`http://localhost:8000/student/id/${id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${"admin, principal, teacher"}`,
-    },
-  }).then((res) => res.json());
+  const student = await fetch(`http://localhost:8000/student/id/${id}`).then(
+    (res) => res.json(),
+  );
 
   return {
     props: {

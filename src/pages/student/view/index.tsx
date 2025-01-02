@@ -19,6 +19,7 @@ export const getServerSideProps = (async (context) => {
       Authorization: `Bearer ${role}`,
     },
   });
+  console.log(role);
   const students: Student[] = await res.json();
   console.log(students);
   return { props: { students, role } };
@@ -50,7 +51,7 @@ export default function ViewPage({
     },
     {
       title: "Class",
-      dataIndex: "className",
+      dataIndex: ["class", "className"],
       key: "class",
     },
     {
@@ -58,27 +59,32 @@ export default function ViewPage({
       key: "action",
       render: (_: unknown, record: Student) => (
         <Space size="middle">
-          <Button
-            onClick={() => {
-              setStudent(record);
-              router.push({
-                pathname: "/student/update",
-                query: {
-                  role,
-                },
-              });
-            }}
-            text="Update"
-            styling="rounded-full bg-blue-600 px-5 py-2 font-bold text-white"
-          />
-          <Button
-            onClick={() => {
-              setStudentIndex(record.id);
-              setDeleteModalShown(true);
-            }}
-            text="Delete"
-            styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
-          />
+          {(role === "Admin" || role === "Teacher") && (
+            <>
+              <Button
+                onClick={() => {
+                  setStudent(record);
+                  router.push({
+                    pathname: "/student/update",
+                    query: {
+                      role,
+                    },
+                  });
+                }}
+                text="Update"
+                styling="rounded-full bg-blue-600 px-5 py-2 font-bold text-white"
+              />
+              <Button
+                onClick={() => {
+                  setStudentIndex(record.id);
+                  setDeleteModalShown(true);
+                }}
+                text="Delete"
+                styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
+              />
+            </>
+          )}
+
           <Button
             onClick={() => {
               router.push({ pathname: `/student/view/${record.id}` });
@@ -92,7 +98,7 @@ export default function ViewPage({
   ];
   return (
     <div className="flex h-screen flex-col items-center text-black">
-      <div className="flex mt-2">
+      <div className="mt-2 flex">
         <p>Find by name: </p>
         <input
           value={searchName}
@@ -100,13 +106,15 @@ export default function ViewPage({
             setSearchName(event.target.value);
             setStudentList(
               students.filter((student) =>
-                student.studentName.toLowerCase().includes(event.target.value.toLowerCase()),
+                student.studentName
+                  .toLowerCase()
+                  .includes(" " + event.target.value.toLowerCase()),
               ),
             );
           }}
         />
       </div>
-      <div className="flex mt-2">
+      <div className="mt-2 flex">
         <p>Find by class name:</p>
         <input
           value={searchClass}
@@ -114,27 +122,36 @@ export default function ViewPage({
             setSearchClass(event.target.value);
             setStudentList(
               students.filter((student) =>
-                student.className.toLowerCase().includes(event.target.value.toLowerCase()),
+                student.className
+                  .toLowerCase()
+                  .includes(event.target.value.toLowerCase()),
               ),
             );
           }}
         />
       </div>
-      <Table className="w-[90%] mt-2" dataSource={studentList} columns={columns} />
-      <Button
-        onClick={() => {
-          router.push({ pathname: "/student/create", query: { role } });
-        }}
-        text="Create student"
-        styling="w-[15%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
+      <Table
+        className="mt-2 w-[90%]"
+        dataSource={studentList}
+        columns={columns}
       />
+      {(role === "Admin" || role === "Teacher") && (
+        <Button
+          onClick={() => {
+            router.push({ pathname: "/student/create", query: { role } });
+          }}
+          text="Create student"
+          styling="w-[15%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
+        />
+      )}
+
       {deleteModalShown && (
         <div
           onClick={() => setDeleteModalShown(false)}
           className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
         >
           <div className="rounded-lg bg-white p-6">
-            {role === "Admin" || role === "Teacher" ? (
+            {(role === "Admin" || role === "Teacher") && (
               <>
                 <p className="text-2xl font-bold text-red-500">
                   Are you sure to delete student with ID {studentIndex}?
@@ -170,10 +187,6 @@ export default function ViewPage({
                   </div>
                 </div>
               </>
-            ) : (
-              <p className="text-2xl font-bold text-red-500">
-                You don&apos;t have permission to delete student
-              </p>
             )}
           </div>
         </div>

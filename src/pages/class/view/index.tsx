@@ -48,27 +48,32 @@ export default function ViewPage({
       key: "action",
       render: (_: unknown, record: Class) => (
         <Space size="middle">
-          <Button
-            onClick={() => {
-              setClass(record);
-              router.push({
-                pathname: "/class/update",
-                query: {
-                  role,
-                },
-              });
-            }}
-            text="Update"
-            styling="rounded-full bg-blue-600 px-5 py-2 font-bold text-white"
-          />
-          <Button
-            onClick={() => {
-              setClassIndex(record.id);
-              setDeleteModalShown(true);
-            }}
-            text="Delete"
-            styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
-          />
+          {(role === "Admin" || role === "Principal") && (
+            <>
+              <Button
+                onClick={() => {
+                  setClass(record);
+                  router.push({
+                    pathname: "/class/update",
+                    query: {
+                      role,
+                    },
+                  });
+                }}
+                text="Update"
+                styling="rounded-full bg-blue-600 px-5 py-2 font-bold text-white"
+              />
+              <Button
+                onClick={() => {
+                  setClassIndex(record.id);
+                  setDeleteModalShown(true);
+                }}
+                text="Delete"
+                styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
+              />
+            </>
+          )}
+
           <Button
             onClick={() => {
               router.push({
@@ -101,61 +106,57 @@ export default function ViewPage({
           }}
         />
       </div>
-      <Table className="w-[90%] mt-2" dataSource={classList} columns={columns} />
-      <Button
-        onClick={() => {
-          router.push({ pathname: "/class/create", query: { role } });
-        }}
-        text="Create class"
-        styling="w-[12%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
+      <Table
+        className="mt-2 w-[90%]"
+        dataSource={classList}
+        columns={columns}
       />
+      {(role === "Admin" || role === "Principal") && (
+        <Button
+          onClick={() => {
+            router.push({ pathname: "/class/create", query: { role } });
+          }}
+          text="Create class"
+          styling="w-[12%] rounded-md bg-blue-600 px-5 py-2 font-bold text-white mt-5"
+        />
+      )}
+
       {deleteModalShown && (
         <div
           onClick={() => setDeleteModalShown(false)}
           className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
         >
           <div className="rounded-lg bg-white p-6">
-            {role === "Admin" || role === "Principal" ? (
-              <>
-                <p className="text-2xl font-bold text-red-500">
-                  Are you sure to delete class with ID {classIndex}?
-                </p>
-                <div className="mt-4 flex justify-end">
-                  <div className="flex w-[40%] justify-between">
-                    <Button
-                      onClick={() => setDeleteModalShown(false)}
-                      text="No"
-                      styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
-                    />
-                    <Button
-                      onClick={async () => {
-                        try {
-                          await fetch(
-                            `http://localhost:8000/class/${classIndex}`,
-                            {
-                              method: "DELETE",
-                              headers: {
-                                Authorization: `Bearer ${role}`,
-                              },
-                            },
-                          );
-                          setDeleteModalShown(false);
-                          router.reload();
-                        } catch (error) {
-                          console.error(error);
-                        }
-                      }}
-                      text="Yes"
-                      styling="rounded-full bg-green-600 px-5 py-2 font-bold text-white"
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-2xl font-bold text-red-500">
-                You don&apos;t have permission to delete class
-              </p>
-            )}
+            <p className="text-2xl font-bold text-red-500">
+              Are you sure to delete class with ID {classIndex}?
+            </p>
+            <div className="mt-4 flex justify-end">
+              <div className="flex w-[40%] justify-between">
+                <Button
+                  onClick={() => setDeleteModalShown(false)}
+                  text="No"
+                  styling="rounded-full bg-red-600 px-5 py-2 font-bold text-white"
+                />
+                <Button
+                  onClick={async () => {
+                    try {
+                      await fetch(`http://localhost:8000/class/${classIndex}`, {
+                        method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${role}`,
+                        },
+                      });
+                      setDeleteModalShown(false);
+                      router.reload();
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                  text="Yes"
+                  styling="rounded-full bg-green-600 px-5 py-2 font-bold text-white"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}

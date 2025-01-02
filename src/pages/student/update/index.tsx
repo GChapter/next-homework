@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Button from "@/components/button";
 import useStudentStore from "@/store/studentStore.ts";
@@ -53,6 +53,10 @@ export default function Page() {
     alert("Student updated successfully");
     await router.push({ pathname: "/student/view", query: { role } });
   };
+
+  useEffect(() => {
+    
+  })
 
   return (
     <>

@@ -48,7 +48,7 @@ export default function Page() {
 
   return (
     <>
-      {role === "Admin" || role === "Teacher" ? (
+      {role === "Admin" || role === "Principal" ? (
         <div className="flex h-[60vh] flex-col items-center justify-around text-black">
           <h1 className="text-4xl font-bold">Update Class</h1>
           <input
