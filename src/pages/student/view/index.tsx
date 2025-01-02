@@ -8,8 +8,11 @@ import useStudentStore from "@/store/studentStore.ts";
 type Student = {
   id: number;
   studentName: string;
-  className: string;
-};
+  class: {
+    classId: number;
+    className: string;
+  };
+}
 
 export const getServerSideProps = (async (context) => {
   const { role } = context.query;
@@ -122,7 +125,7 @@ export default function ViewPage({
             setSearchClass(event.target.value);
             setStudentList(
               students.filter((student) =>
-                student.className
+                student.class.className
                   .toLowerCase()
                   .includes(event.target.value.toLowerCase()),
               ),

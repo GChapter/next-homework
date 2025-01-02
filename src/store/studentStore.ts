@@ -3,7 +3,10 @@ import { create } from "zustand";
 interface Student {
   id: number;
   studentName: string;
-  className: string;
+  class: {
+    classId: number;
+    className: string;
+  };
 }
 
 interface StudentStore {

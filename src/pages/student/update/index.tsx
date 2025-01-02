@@ -13,7 +13,7 @@ export default function Page() {
   const [studentName, setStudentName] = useState<string>(
     student?.studentName || "",
   );
-  const [className, setClassName] = useState<string>(student?.className || "");
+  const [className, setClassName] = useState<string>(student?.class.className || "");
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -46,7 +46,7 @@ export default function Page() {
           "Failed to update student. Please try again.",
       );
       setStudentName(student?.studentName || "");
-      setClassName(student?.className || "");
+      setClassName(student?.class.className || "");
       return;
     }
 
@@ -54,9 +54,7 @@ export default function Page() {
     await router.push({ pathname: "/student/view", query: { role } });
   };
 
-  useEffect(() => {
-    
-  })
+  useEffect(() => {});
 
   return (
     <>

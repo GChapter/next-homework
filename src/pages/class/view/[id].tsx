@@ -14,8 +14,10 @@ interface Class {
 interface Student {
   id: number;
   studentName: string;
-  classId: string;
-  class: object;
+  class: {
+    classId: number;
+    className: string;
+  };
 }
 
 interface Props {
