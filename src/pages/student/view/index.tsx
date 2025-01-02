@@ -12,7 +12,7 @@ type Student = {
     classId: number;
     className: string;
   };
-}
+};
 
 export const getServerSideProps = (async (context) => {
   const { role } = context.query;
@@ -99,6 +99,21 @@ export default function ViewPage({
       ),
     },
   ];
+
+  const filterStudents = (name: string, className: string) => {
+    const filteredStudents = students.filter((student) => {
+      const nameMatches = student.studentName
+        .toLowerCase()
+        .split(" ")
+        .some((word) => word.startsWith(name.toLowerCase()));
+      const classMatches = student.class.className
+        .toLowerCase()
+        .startsWith(className.toLowerCase());
+      return nameMatches && classMatches;
+    });
+    setStudentList(filteredStudents);
+  };
+
   return (
     <div className="flex h-screen flex-col items-center text-black">
       <div className="mt-2 flex">
@@ -107,13 +122,7 @@ export default function ViewPage({
           value={searchName}
           onChange={(event) => {
             setSearchName(event.target.value);
-            setStudentList(
-              students.filter((student) =>
-                student.studentName
-                  .toLowerCase()
-                  .includes(" " + event.target.value.toLowerCase()),
-              ),
-            );
+            filterStudents(event.target.value, searchClass);
           }}
         />
       </div>
@@ -123,13 +132,7 @@ export default function ViewPage({
           value={searchClass}
           onChange={(event) => {
             setSearchClass(event.target.value);
-            setStudentList(
-              students.filter((student) =>
-                student.class.className
-                  .toLowerCase()
-                  .includes(event.target.value.toLowerCase()),
-              ),
-            );
+            filterStudents(searchName, event.target.value);
           }}
         />
       </div>
